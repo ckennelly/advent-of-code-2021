@@ -1,0 +1,35 @@
+workspace(name = "com_ckennelly_aoc2021")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Abseil
+http_archive(
+    name = "com_google_absl",  # 2021-05-20T02:59:16Z
+    urls = ["https://github.com/abseil/abseil-cpp/archive/7971fb358ae376e016d2d4fc9327aad95659b25e.zip"],
+    strip_prefix = "abseil-cpp-7971fb358ae376e016d2d4fc9327aad95659b25e",
+    sha256 = "aeba534f7307e36fe084b452299e49b97420667a8d28102cf9a0daeed340b859",
+)
+
+# GoogleTest/GoogleMock framework. Used by most unit-tests.
+http_archive(
+    name = "com_google_googletest",  # 2021-05-19T20:10:13Z
+    urls = ["https://github.com/google/googletest/archive/aa9b44a18678dfdf57089a5ac22c1edb69f35da5.zip"],
+    strip_prefix = "googletest-aa9b44a18678dfdf57089a5ac22c1edb69f35da5",
+    sha256 = "8cf4eaab3a13b27a95b7e74c58fb4c0788ad94d1f7ec65b20665c4caf1d245e8",
+)
+
+# Google benchmark.
+http_archive(
+    name = "com_github_google_benchmark",
+    urls = ["https://github.com/google/benchmark/archive/0baacde3618ca617da95375e0af13ce1baadea47.zip"],
+    strip_prefix = "benchmark-0baacde3618ca617da95375e0af13ce1baadea47",
+    sha256 = "62e2f2e6d8a744d67e4bbc212fcfd06647080de4253c97ad5c6749e09faf2cb0",
+)
+
+# C++ rules for Bazel.
+http_archive(
+    name = "rules_cc",  # 2021-05-14T14:51:14Z
+    urls = ["https://github.com/bazelbuild/rules_cc/archive/68cb652a71e7e7e2858c50593e5a9e3b94e5b9a9.zip"],
+    strip_prefix = "rules_cc-68cb652a71e7e7e2858c50593e5a9e3b94e5b9a9",
+    sha256 = "1e19e9a3bc3d4ee91d7fcad00653485ee6c798efbbf9588d40b34cbfbded143d",
+)
