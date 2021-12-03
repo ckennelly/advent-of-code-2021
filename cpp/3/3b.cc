@@ -84,5 +84,5 @@ int main(int argc, char** argv) {
   assert(!oxygen.empty());
   assert(!co2.empty());
 
-  printf("%d\n");
+  printf("%d\n", oxygen[0] * co2[0]);
 }
