@@ -51,5 +51,5 @@ int main(int argc, char** argv) {
   for (const auto& kv : fish) {
     count += kv.second;
   }
-  printf("%llu\n", count);
+  printf("%lu\n", count);
 }

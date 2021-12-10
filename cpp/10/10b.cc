@@ -143,5 +143,5 @@ int main(int argc, char** argv) {
 
   std::sort(scores.begin(), scores.end());
 
-  printf("%lld\n", scores[scores.size() / 2]);
+  printf("%ld\n", scores[scores.size() / 2]);
 }
