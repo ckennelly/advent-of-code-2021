@@ -33,13 +33,9 @@ uint64_t consumeInt(absl::string_view& s, size_t size) {
   return value;
 }
 
-uint64_t consumeVersion(absl::string_view& s) {
-  return consumeInt(s, 3);
-}
+uint64_t consumeVersion(absl::string_view& s) { return consumeInt(s, 3); }
 
-uint64_t consumeType(absl::string_view& s) {
-  return consumeInt(s, 3);
-}
+uint64_t consumeType(absl::string_view& s) { return consumeInt(s, 3); }
 
 uint64_t consumeVarint(absl::string_view& s) {
   uint64_t result = 0;
@@ -57,22 +53,10 @@ std::string convert(std::string s) {
   ret.reserve(s.size() * 4);
 
   absl::flat_hash_map<char, std::string> m = {
-   {'0', "0000"},
-   {'1', "0001"},
-   {'2', "0010"},
-   {'3', "0011"},
-   {'4', "0100"},
-   {'5', "0101"},
-   {'6', "0110"},
-   {'7', "0111"},
-   {'8', "1000"},
-   {'9', "1001"},
-   {'A', "1010"},
-   {'B', "1011"},
-   {'C', "1100"},
-   {'D', "1101"},
-   {'E', "1110"},
-   {'F', "1111"},
+      {'0', "0000"}, {'1', "0001"}, {'2', "0010"}, {'3', "0011"},
+      {'4', "0100"}, {'5', "0101"}, {'6', "0110"}, {'7', "0111"},
+      {'8', "1000"}, {'9', "1001"}, {'A', "1010"}, {'B', "1011"},
+      {'C', "1100"}, {'D', "1101"}, {'E', "1110"}, {'F', "1111"},
   };
 
   for (auto c : s) {
@@ -135,7 +119,7 @@ uint64_t parsePacket(absl::string_view& s) {
       }
       return m;
     }
-     case 3: {
+    case 3: {
       uint64_t m = 0;
       for (auto v : inputs) {
         m = std::max(m, v);
@@ -146,11 +130,11 @@ uint64_t parsePacket(absl::string_view& s) {
       assert(inputs.size() == 2);
       return inputs[0] > inputs[1] ? 1 : 0;
     }
-     case 6:{
+    case 6: {
       assert(inputs.size() == 2);
       return inputs[0] < inputs[1] ? 1 : 0;
     }
-      case 7:{
+    case 7: {
       assert(inputs.size() == 2);
       return inputs[0] == inputs[1] ? 1 : 0;
     }
@@ -168,5 +152,4 @@ int main(int argc, char** argv) {
   uint64_t total_sum = parsePacket(s);
 
   printf("%lu\n", total_sum);
-
 }
