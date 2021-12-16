@@ -85,77 +85,74 @@ uint64_t parsePacket(absl::string_view& s) {
   consumeVersion(s);
   const uint64_t type = consumeType(s);
 
-  switch (type) {
-    case 4: {
-      return consumeVarint(s);
+  if (type == 4) {
+    return consumeVarint(s);
+  }
+
+  const auto lengthId = consumeInt(s, 1);
+  std::vector<uint64_t> inputs;
+  switch (lengthId) {
+    case 0: {
+      const int bytes = consumeInt(s, 15);
+      absl::string_view substr = s.substr(0, bytes);
+      s = s.substr(bytes);
+
+      while (!substr.empty()) {
+        inputs.push_back(parsePacket(substr));
+      }
+
+      break;
     }
-    default: {
-      const auto lengthId = consumeInt(s, 1);
-      std::vector<uint64_t> inputs;
-      switch (lengthId) {
-        case 0: {
-          const int bytes = consumeInt(s, 15);
-          absl::string_view substr = s.substr(0, bytes);
-          s = s.substr(bytes);
-
-          while (!substr.empty()) {
-            inputs.push_back(parsePacket(substr));
-          }
-
-          break;
-        }
-        case 1: {
-          const int count = consumeInt(s, 11);
-          for (int i = 0; i < count; i++) {
-            inputs.push_back(parsePacket(s));
-          }
-          break;
-        }
-        default:
-          assert(false);
+    case 1: {
+      const int count = consumeInt(s, 11);
+      for (int i = 0; i < count; i++) {
+        inputs.push_back(parsePacket(s));
       }
-      switch (type) {
-        case 0: {
-          uint64_t sum = 0;
-          for (auto v : inputs) {
-            sum += v;
-          }
-          return sum;
-        }
-        case 1: {
-          uint64_t prod = 1;
-          for (auto v : inputs) {
-            prod *= v;
-          }
-          return prod;
-        }
-        case 2: {
-          uint64_t m = std::numeric_limits<uint64_t>::max();
-          for (auto v : inputs) {
-            m = std::min(m, v);
-          }
-          return m;
-        }
-         case 3: {
-          uint64_t m = 0;
-          for (auto v : inputs) {
-            m = std::max(m, v);
-          }
-          return m;
-        }
-        case 5: {
-          assert(inputs.size() == 2);
-          return inputs[0] > inputs[1] ? 1 : 0;
-        }
-         case 6:{
-          assert(inputs.size() == 2);
-          return inputs[0] < inputs[1] ? 1 : 0;
-        }
-          case 7:{
-          assert(inputs.size() == 2);
-          return inputs[0] == inputs[1] ? 1 : 0;
-        }
+      break;
+    }
+    default:
+      assert(false);
+  }
+  switch (type) {
+    case 0: {
+      uint64_t sum = 0;
+      for (auto v : inputs) {
+        sum += v;
       }
+      return sum;
+    }
+    case 1: {
+      uint64_t prod = 1;
+      for (auto v : inputs) {
+        prod *= v;
+      }
+      return prod;
+    }
+    case 2: {
+      uint64_t m = std::numeric_limits<uint64_t>::max();
+      for (auto v : inputs) {
+        m = std::min(m, v);
+      }
+      return m;
+    }
+     case 3: {
+      uint64_t m = 0;
+      for (auto v : inputs) {
+        m = std::max(m, v);
+      }
+      return m;
+    }
+    case 5: {
+      assert(inputs.size() == 2);
+      return inputs[0] > inputs[1] ? 1 : 0;
+    }
+     case 6:{
+      assert(inputs.size() == 2);
+      return inputs[0] < inputs[1] ? 1 : 0;
+    }
+      case 7:{
+      assert(inputs.size() == 2);
+      return inputs[0] == inputs[1] ? 1 : 0;
     }
   }
 

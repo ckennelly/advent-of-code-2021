@@ -87,35 +87,31 @@ uint64_t parsePacket(absl::string_view& s) {
 
   uint64_t total_sum = version;
 
-  switch (type) {
-    case 4: {
-      consumeVarint(s);
-      break;
-    }
-    default: {
-      const auto lengthId = consumeInt(s, 1);
-      switch (lengthId) {
-        case 0: {
-          const int bytes = consumeInt(s, 15);
-          absl::string_view substr = s.substr(0, bytes);
-          s = s.substr(bytes);
+  if (type == 4) {
+    consumeVarint(s);
+  } else {
+    const auto lengthId = consumeInt(s, 1);
+    switch (lengthId) {
+      case 0: {
+        const int bytes = consumeInt(s, 15);
+        absl::string_view substr = s.substr(0, bytes);
+        s = s.substr(bytes);
 
-          while (!substr.empty()) {
-            total_sum += parsePacket(substr);
-          }
+        while (!substr.empty()) {
+          total_sum += parsePacket(substr);
+        }
 
-          break;
-        }
-        case 1: {
-          const int count = consumeInt(s, 11);
-          for (int i = 0; i < count; i++) {
-            total_sum += parsePacket(s);
-          }
-          break;
-        }
-        default:
-          assert(false);
+        break;
       }
+      case 1: {
+        const int count = consumeInt(s, 11);
+        for (int i = 0; i < count; i++) {
+          total_sum += parsePacket(s);
+        }
+        break;
+      }
+      default:
+        assert(false);
     }
   }
 
