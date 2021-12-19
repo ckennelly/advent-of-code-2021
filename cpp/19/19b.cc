@@ -44,52 +44,64 @@ struct XYZ {
   }
 };
 
-XYZ permute(XYZ input, int x) {
-  // Half of these permutations are nominally redundant.
-  assert(x < 48);
+XYZ permute(XYZ input, int perm) {
+  assert(perm < 24);
+  const int x = input.x;
+  const int y = input.y;
+  const int z = input.z;
 
-  int updown = x / 6;
-  assert(updown < 8);
-  if (updown & 0x1) {
-    input.x *= -1;
-  }
-  if (updown & 0x2) {
-    input.y *= -1;
-  }
-  if (updown & 0x4) {
-    input.z *= -1;
-  }
-
-  XYZ output = input;
-  int shuffle = x % 6;
-  using std::swap;
-  switch (shuffle) {
-    case 0:  // xyz
-      break;
-    case 1:  // yxz
-      swap(output.x, output.y);
-      break;
-    case 2:  // zyx
-      swap(output.x, output.z);
-      break;
-    case 3:  // xzy
-      swap(output.y, output.z);
-      break;
-    case 4:  // yzx
-      output.x = input.y;
-      output.y = input.z;
-      output.z = input.x;
-      break;
-    case 5:  // zxy
-      output.x = input.z;
-      output.y = input.x;
-      output.z = input.y;
-      break;
+  switch (perm) {
+    case 0:
+      return {x, z, -y};
+    case 1:
+      return {-z, x, -y};
+    case 2:
+      return {-x, -z, -y};
+    case 3:
+      return {z, -x, -y};
+    case 4:
+      return {z, -y, x};
+    case 5:
+      return {y, z, x};
+    case 6:
+      return {-z, y, x};
+    case 7:
+      return {-y, -z, x};
+    case 8:
+      return {-y, x, z};
+    case 9:
+      return {-x, -y, z};
+    case 10:
+      return {y, -x, z};
+    case 11:
+      return {x, y, z};
+    case 12:
+      return {-z, -x, y};
+    case 13:
+      return {x, -z, y};
+    case 14:
+      return {z, x, y};
+    case 15:
+      return {-x, z, y};
+    case 16:
+      return {-x, y, -z};
+    case 17:
+      return {-y, -x, -z};
+    case 18:
+      return {x, -y, -z};
+    case 19:
+      return {y, x, -z};
+    case 20:
+      return {y, -z, -x};
+    case 21:
+      return {z, y, -x};
+    case 22:
+      return {-y, z, -x};
+    case 23:
+      return {-z, -y, -x};
     default:
       __builtin_unreachable();
   }
-
-  return output;
 }
 
 int main(int argc, char** argv) {
@@ -136,7 +148,7 @@ int main(int argc, char** argv) {
       const auto& currentBeacons = scannerBeacons[index];
       bool found = false;
 
-      for (int perm = 0; perm < 48; perm++) {
+      for (int perm = 0; perm < 24; perm++) {
         absl::flat_hash_set<XYZ> points;
         for (auto beacon : currentBeacons) {
           const XYZ permuted = permute(beacon, perm);
