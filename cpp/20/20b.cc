@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  const int delta = 3;
+  const int delta = 1;
   tx += delta;
   ty += delta;
   minx -= delta;
