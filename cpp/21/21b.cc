@@ -33,6 +33,22 @@ using namespace aoc2021_21;
 
 using State = std::tuple<int, int, int, int, int>;
 
+int& position(State& s, int player) {
+  return player == 0 ? std::get<0>(s) : std::get<1>(s);
+}
+
+int& score(State& s, int player) {
+  return player == 0 ? std::get<2>(s) : std::get<3>(s);
+}
+
+const int& score(const State& s, int player) {
+  return player == 0 ? std::get<2>(s) : std::get<3>(s);
+}
+
+int& turn(State& s) { return std::get<4>(s); }
+
+const int& turn(const State& s) { return std::get<4>(s); }
+
 int main(int argc, char** argv) {
   std::string input = readAll();
   std::map<int, int> positions;
@@ -73,20 +89,19 @@ int main(int argc, char** argv) {
         continue;
       }
 
-      const int old_turn = std::get<4>(state);
-
       for (int i = 0; i < 10; i++) {
         if (roll_dist[i] == 0) {
           continue;
         }
         State s = state;
-        std::get<4>(s) ^= 1;
+        int& current = turn(s);
 
-        int& pos = old_turn == 0 ? std::get<0>(s) : std::get<1>(s);
-        int& score = old_turn == 0 ? std::get<2>(s) : std::get<3>(s);
+        int& pos = position(s, current);
+        int& player_score = score(s, current);
 
         pos = (pos + i) % 10;
-        score += pos + 1;
+        player_score += pos + 1;
+        current ^= 1;
 
         new_visit[s] += count * roll_dist[i];
       }
@@ -97,13 +112,15 @@ int main(int argc, char** argv) {
 
   uint64_t player_counts[2] = {0, 0};
   for (auto& way_to_score : ways_to_score) {
-    bool winners[2] = {std::get<2>(way_to_score.first) >= 21,
-                       std::get<3>(way_to_score.first) >= 21};
+    bool winners[2] = {score(way_to_score.first, 0) >= 21,
+                       score(way_to_score.first, 1) >= 21};
     if (!winners[0] && !winners[1]) {
       continue;
     }
 
-    player_counts[std::get<4>(way_to_score.first) ^ 1] += way_to_score.second;
+    // Both players should not have won.
+    assert(int(winners[0]) ^ int(winners[1]));
+    player_counts[turn(way_to_score.first) ^ 1] += way_to_score.second;
   }
 
   absl::PrintF("%u\n", std::max(player_counts[0], player_counts[1]));
