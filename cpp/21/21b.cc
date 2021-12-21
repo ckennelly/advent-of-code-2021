@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -31,23 +32,17 @@ std::string readAll() {
 
 using namespace aoc2021_21;
 
-using State = std::tuple<int, int, int, int, int>;
+using State = std::tuple<std::array<int, 2>, std::array<int, 2>, int>;
 
-int& position(State& s, int player) {
-  return player == 0 ? std::get<0>(s) : std::get<1>(s);
-}
+int& position(State& s, int player) { return std::get<0>(s)[player]; }
 
-int& score(State& s, int player) {
-  return player == 0 ? std::get<2>(s) : std::get<3>(s);
-}
+int& score(State& s, int player) { return std::get<1>(s)[player]; }
 
-const int& score(const State& s, int player) {
-  return player == 0 ? std::get<2>(s) : std::get<3>(s);
-}
+const int& score(const State& s, int player) { return std::get<1>(s)[player]; }
 
-int& turn(State& s) { return std::get<4>(s); }
+int& turn(State& s) { return std::get<2>(s); }
 
-const int& turn(const State& s) { return std::get<4>(s); }
+const int& turn(const State& s) { return std::get<2>(s); }
 
 int main(int argc, char** argv) {
   std::string input = readAll();
@@ -73,8 +68,8 @@ int main(int argc, char** argv) {
   absl::flat_hash_map<State, uint64_t> to_visit;
 
   State starting;
-  std::get<0>(starting) = positions[0];
-  std::get<1>(starting) = positions[1];
+  position(starting, 0) = positions[0];
+  position(starting, 1) = positions[1];
   to_visit.emplace(starting, 1);
 
   while (!to_visit.empty()) {
@@ -85,7 +80,7 @@ int main(int argc, char** argv) {
       const uint64_t count = kv.second;
       ways_to_score[state] += count;
 
-      if (std::get<2>(state) >= 21 || std::get<3>(state) >= 21) {
+      if (score(state, 0) >= 21 || score(state, 1) >= 21) {
         continue;
       }
 
